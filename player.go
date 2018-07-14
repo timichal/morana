@@ -19,10 +19,10 @@ func (player *Player) changePlayerHP(chval int) {
 	player.HP = player.HP + chval
 }
 
-func placePlayer(floormap [20][50]Tile) Player {
+func placePlayer(floormap [50][20]Tile) Player {
 	for {
-		xpos := randomInt(20)
-		ypos := randomInt(50)
+		xpos := randomInt(50)
+		ypos := randomInt(20)
 
 		tiletype := floormap[xpos][ypos].TileType
 
