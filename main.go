@@ -8,24 +8,24 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
+var tiletypes = initTileTypes()
+
 func main() {
 	/*
-	err := termbox.Init()
-	if err != nil {
-		panic(err)
-	}
+		err := termbox.Init()
+		if err != nil {
+			panic(err)
+		}
 
-	defer termbox.Close()
+		defer termbox.Close()
 
-	IntroScreen()
-	MainLoop()
+		IntroScreen()
+		MainLoop()
 	*/
-	playertest := Player{Name: "Bob", Level: 1, Attack: 10, Defense: 10, HP: 100}
-	fmt.Printf("%d\n", playertest.HP)
-	playertest.changePlayerHP(10)
-	fmt.Printf("%d\n", playertest.HP)
 
-	mapgen()
+	fmt.Println(tiletypes)
+
+	DrawMap()
 }
 
 func IntroScreen() {
@@ -55,4 +55,23 @@ func IntroScreen() {
 }
 
 func MainLoop() {
+}
+
+func DrawMap() {
+
+	//generating the map
+	floormap := mapgen()
+	player := placePlayer(floormap)
+
+	for x, row := range floormap {
+		for y, tile := range row {
+			if x == player.xpos && y == player.ypos {
+				fmt.Printf("@")
+			} else {
+				fmt.Printf(string(tile.TileType))
+			}
+		}
+		fmt.Printf("\n")
+	}
+
 }
