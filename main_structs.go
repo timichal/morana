@@ -4,15 +4,23 @@ main structures and instantiations used all over
 
 package main
 
+import "github.com/nsf/termbox-go"
+
 type (
 	Engine struct {
-		Victory bool
+		chanStop     chan struct{}
+		CurrentFloor string
+		State        string
+		KeyInput     *KeyInput
 	}
 
 	View struct {
 	}
 
 	KeyInput struct {
+		stopped      bool
+		chanStop     chan struct{}
+		chanKeyInput chan *termbox.Event
 	}
 
 	Tileset map[rune]TileType

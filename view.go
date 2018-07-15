@@ -6,6 +6,7 @@ package main
 
 import (
 	"github.com/nsf/termbox-go"
+	"os"
 	"strconv"
 )
 
@@ -14,11 +15,7 @@ func initView() {
 	if err != nil {
 		panic(err)
 	}
-
-	view.drawMap("0")
-	view.drawBar()
-	view.drawDebug(debugtext)
-	termbox.Flush()
+	view.refresh()
 }
 
 func (view *View) stop() {
@@ -29,16 +26,43 @@ func (view *View) refresh() {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
 	// input handling
-	keyInput.handleInput()
+	switch engine.State {
+	case "Intro":
+		view.drawIntro()
+	case "GameOn":
+		// drawing the main screen
+		view.drawMap(engine.CurrentFloor)
+		// drawing the bottom bar
+		view.drawBar()
 
-	// drawing the main screen
-	view.drawMap("0")
-	// drawing the bottom bar
-	view.drawBar()
-
-	view.drawDebug(debugtext)
-
+		view.drawDebug(debugtext)
+	case "Victory":
+		view.drawVictoryLine()
+	default:
+		view.stop()
+		os.Exit(0)
+	}
 	termbox.Flush()
+}
+
+func (view *View) drawIntro() {
+	introtext_1 :=`___  ___                            `
+	introtext_2 :=`|  \/  |                            `
+	introtext_3 :=`| .  . | ___  _ __ __ _ _ __   __ _ `
+	introtext_4 :=`| |\/| |/ _ \| '__/ _| | '_ \ / _| |`
+	introtext_5 :=`| |  | | (_) | | | (_| | | | | (_| |`
+	introtext_6 :=`\_|  |_/\___/|_|  \__,_|_| |_|\__,_|`
+	view.drawText(10, 10, introtext_1, termbox.ColorWhite, termbox.ColorBlack)
+	view.drawText(10, 11, introtext_2, termbox.ColorWhite, termbox.ColorBlack)
+	view.drawText(10, 12, introtext_3, termbox.ColorWhite, termbox.ColorBlack)
+	view.drawText(10, 13, introtext_4, termbox.ColorWhite, termbox.ColorBlack)
+	view.drawText(10, 14, introtext_5, termbox.ColorWhite, termbox.ColorBlack)
+	view.drawText(10, 15, introtext_6, termbox.ColorWhite, termbox.ColorBlack)
+}
+
+func (view *View) drawVictoryLine() {
+	bartext := "You win! Press r to restart or esc/q to quit"
+	view.drawText(0, 20, bartext, termbox.ColorWhite, termbox.ColorBlack)
 }
 
 func (view *View) drawMap(floor string) {
@@ -54,12 +78,7 @@ func (view *View) drawMap(floor string) {
 }
 
 func (view *View) drawBar() {
-	var bartext string
-	if engine.Victory == false {
-		bartext = "Name: " + player.Name + " | Level " + strconv.Itoa(player.Level) + " | HP " + strconv.Itoa(player.HP) + " | Moves " + strconv.Itoa(player.Moves)
-	} else {
-		bartext = "You win! Press r to restart or esc/q to quit"
-	}
+	bartext := "Name: " + player.Name + " | Level " + strconv.Itoa(player.Level) + " | HP " + strconv.Itoa(player.HP) + " | Moves " + strconv.Itoa(player.Moves)
 	view.drawText(0, 20, bartext, termbox.ColorWhite, termbox.ColorBlack)
 }
 

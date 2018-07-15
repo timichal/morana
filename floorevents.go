@@ -13,6 +13,6 @@ func floorevents() {
 	//debugtext = fmt.Sprintln(player.PosX, player.PosY, floormap[player.Floor][player.PosX][player.PosY])
 	// victory
 	if floormap[player.Floor][player.PosX][player.PosY].TileType == 'V' {
-		engine.Victory = true
+		engine.State = "Victory"
 	}
 }

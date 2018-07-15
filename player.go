@@ -4,12 +4,12 @@ the player struct and methods
 package main
 
 func initPlayer() {
-	player = Player {
-		Name: "Bob",
+	player = Player{
+		Name:  "Bob",
 		Level: 1,
-		HP: 100,
+		HP:    100,
 		Floor: "0"}
-	}
+}
 
 // positioning the player to stairs down
 func (player *Player) position(floor Floor) {
