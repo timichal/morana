@@ -4,43 +4,22 @@ Main file of the Morana game
 package main
 
 import (
-	//"fmt"
-	"github.com/nsf/termbox-go"
+//"fmt"
+//"github.com/nsf/termbox-go"
 )
-
-var tiletypes = initTileTypes()
-var floormap = mapgen()
-var player = placePlayer(floormap)
-
+var debugtext string
+// main() tailored to termbox
 func main() {
 
-	err := termbox.Init()
-	if err != nil {
-		panic(err)
+	initTileset()
+	initMap()
+
+	player.init(floormap["0"])
+
+	initView()
+
+	// main loop
+	for {
+		view.refresh()
 	}
-
-	defer termbox.Close()
-
-	//fmt.Println(tiletypes)
-
-	drawMap()
 }
-
-func MainLoop() {
-}
-
-/*
-func DrawMap() {
-	for x, row := range floormap {
-		for y, tile := range row {
-			if x == player.xpos && y == player.ypos {
-				fmt.Printf("@")
-			} else {
-				fmt.Printf(string(tile.TileType))
-			}
-		}
-		fmt.Printf("\n")
-	}
-
-}
-*/

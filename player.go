@@ -3,32 +3,31 @@ the player struct and methods
 */
 package main
 
-type (
-	Player struct {
-		Name    string
-		Level   int
-		Attack  int
-		Defense int
-		HP      int
-		xpos    int
-		ypos    int
-	}
-)
+// positioning the player to stairs down
+func (player *Player) init(floor Floor) {
+	player.xpos = 10
+	player.ypos = 10
 
-func (player *Player) changePlayerHP(chval int) {
-	player.HP = player.HP + chval
-}
-
-func placePlayer(floormap [50][20]Tile) Player {
-	for {
-		xpos := randomInt(50)
-		ypos := randomInt(20)
-
-		tiletype := floormap[xpos][ypos].TileType
-
-		if tiletypes[tiletype].Passable {
-			player := Player{xpos: xpos, ypos: ypos}
-			return player
+	for i, row := range floor {
+		for j := range row {
+			if floor[i][j].TileType == '<' {
+				player.xpos = i
+				player.ypos = j
+				return
+			}
 		}
 	}
+}
+
+func (player *Player) move(dir string) {
+	NewPosX, NewPosY := bydir(player.xpos, player.ypos, dir, 1)
+	if tileset[floormap[player.Floor][NewPosX][NewPosY].TileType].Passable {
+		player.xpos, player.ypos = NewPosX, NewPosY
+	}
+	moves++
+	floorevents()
+}
+
+func (player *Player) changeHP(chval int) {
+	player.HP = player.HP + chval
 }
