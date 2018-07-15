@@ -7,19 +7,24 @@ import (
 //"fmt"
 //"github.com/nsf/termbox-go"
 )
+
 var debugtext string
+
 // main() tailored to termbox
 func main() {
 
-	initTileset()
-	initMap()
-
-	player.init(floormap["0"])
-
+	gameInit()
 	initView()
-
 	// main loop
 	for {
 		view.refresh()
 	}
+}
+
+func gameInit() {
+	initEngine()
+	initTileset()
+	initMap()
+	initPlayer()
+	player.position(floormap["0"])
 }

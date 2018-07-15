@@ -3,16 +3,21 @@ the player struct and methods
 */
 package main
 
-// positioning the player to stairs down
-func (player *Player) init(floor Floor) {
-	player.xpos = 10
-	player.ypos = 10
+func initPlayer() {
+	player = Player {
+		Name: "Bob",
+		Level: 1,
+		HP: 100,
+		Floor: "0"}
+	}
 
+// positioning the player to stairs down
+func (player *Player) position(floor Floor) {
 	for i, row := range floor {
 		for j := range row {
 			if floor[i][j].TileType == '<' {
-				player.xpos = i
-				player.ypos = j
+				player.PosX = i
+				player.PosY = j
 				return
 			}
 		}
@@ -20,12 +25,13 @@ func (player *Player) init(floor Floor) {
 }
 
 func (player *Player) move(dir string) {
-	NewPosX, NewPosY := bydir(player.xpos, player.ypos, dir, 1)
+	NewPosX, NewPosY := bydir(player.PosX, player.PosY, dir, 1)
 	if tileset[floormap[player.Floor][NewPosX][NewPosY].TileType].Passable {
-		player.xpos, player.ypos = NewPosX, NewPosY
+		player.PosX, player.PosY = NewPosX, NewPosY
+		player.Moves++
+		floorevents()
 	}
-	moves++
-	floorevents()
+
 }
 
 func (player *Player) changeHP(chval int) {

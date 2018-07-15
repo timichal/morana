@@ -4,14 +4,15 @@ stuff that happens to the player on the floor
 
 package main
 
-import "fmt"
-import "os"
-import "github.com/nsf/termbox-go"
+import (
+//"fmt"
+//"os"
+)
+
 func floorevents() {
+	//debugtext = fmt.Sprintln(player.PosX, player.PosY, floormap[player.Floor][player.PosX][player.PosY])
 	// victory
-	if floormap[player.Floor][player.xpos][player.ypos].TileType == '🏁'{
-		termbox.Close()
-		fmt.Printf("You win! \n")
-		os.Exit(0)
+	if floormap[player.Floor][player.PosX][player.PosY].TileType == 'V' {
+		engine.Victory = true
 	}
 }

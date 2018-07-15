@@ -20,7 +20,7 @@ func initTileset() {
 		Passable: true}
 
 	//victory flag
-	tileset['🏁'] = TileType{
+	tileset['V'] = TileType{
 		Name:     "Victory",
 		Passable: true}
 }

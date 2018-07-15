@@ -39,15 +39,14 @@ func floorgen() Floor {
 
 	// victory flag for the lulz
 	for {
-		stairsx := randomInt(50)
-		stairsy := randomInt(20)
+		flagx := randomInt(50)
+		flagy := randomInt(20)
 
-		if floor[stairsx][stairsy].TileType == '.' {
-			floor[stairsx][stairsy] = floor.genTile('🏁')
+		if floor[flagx][flagy].TileType == '.' {
+			floor[flagx][flagy] = floor.genTile('V')
 			break
 		}
 	}
-
 
 	return floor
 }

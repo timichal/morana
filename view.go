@@ -14,6 +14,11 @@ func initView() {
 	if err != nil {
 		panic(err)
 	}
+
+	view.drawMap("0")
+	view.drawBar()
+	view.drawDebug(debugtext)
+	termbox.Flush()
 }
 
 func (view *View) stop() {
@@ -23,6 +28,9 @@ func (view *View) stop() {
 func (view *View) refresh() {
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
+	// input handling
+	keyInput.handleInput()
+
 	// drawing the main screen
 	view.drawMap("0")
 	// drawing the bottom bar
@@ -31,9 +39,6 @@ func (view *View) refresh() {
 	view.drawDebug(debugtext)
 
 	termbox.Flush()
-
-	// input handling
-	keyInput.handleInput()
 }
 
 func (view *View) drawMap(floor string) {
@@ -45,11 +50,16 @@ func (view *View) drawMap(floor string) {
 	}
 
 	// draw the player
-	termbox.SetCell(player.xpos, player.ypos, '@', termbox.ColorRed, termbox.ColorBlack)
+	termbox.SetCell(player.PosX, player.PosY, '@', termbox.ColorRed, termbox.ColorBlack)
 }
 
 func (view *View) drawBar() {
-	bartext := "Name: " + player.Name + " | Level " + strconv.Itoa(player.Level) + " | HP " + strconv.Itoa(player.HP) + " | Moves " + strconv.Itoa(moves)
+	var bartext string
+	if engine.Victory == false {
+		bartext = "Name: " + player.Name + " | Level " + strconv.Itoa(player.Level) + " | HP " + strconv.Itoa(player.HP) + " | Moves " + strconv.Itoa(player.Moves)
+	} else {
+		bartext = "You win! Press r to restart or esc/q to quit"
+	}
 	view.drawText(0, 20, bartext, termbox.ColorWhite, termbox.ColorBlack)
 }
 

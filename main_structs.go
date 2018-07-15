@@ -5,6 +5,10 @@ main structures and instantiations used all over
 package main
 
 type (
+	Engine struct {
+		Victory bool
+	}
+
 	View struct {
 	}
 
@@ -32,22 +36,22 @@ type (
 	}
 
 	Player struct {
-		Name    string
-		Level   int
-		HP      int
-		Attack  int
-		Defense int
-		Floor   string
-		xpos    int
-		ypos    int
+		Name   string
+		Level  int
+		HP     int
+		Attack int
+		Floor  string
+		PosX   int
+		PosY   int
+		Moves  int
 	}
 )
 
 var (
-	moves int
 	view     View
 	keyInput KeyInput
-	player   = Player{Name: "Bob", Level: 1, HP: 100, Floor: "0"}
+	engine   Engine
+	player   Player
 	tileset  = make(Tileset)
 	floormap = make(FloorMap)
 )
