@@ -4,3 +4,5 @@ todo:
 * floor switcher
 * fix restart
 * intro screen (engine states)
+* term size: 80x24 - to variables
+* for cycle for unicode strings

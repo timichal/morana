@@ -46,18 +46,30 @@ func (view *View) refresh() {
 }
 
 func (view *View) drawIntro() {
-	introtext_1 :=`___  ___                            `
-	introtext_2 :=`|  \/  |                            `
-	introtext_3 :=`| .  . | ___  _ __ __ _ _ __   __ _ `
-	introtext_4 :=`| |\/| |/ _ \| '__/ _| | '_ \ / _| |`
-	introtext_5 :=`| |  | | (_) | | | (_| | | | | (_| |`
-	introtext_6 :=`\_|  |_/\___/|_|  \__,_|_| |_|\__,_|`
-	view.drawText(10, 10, introtext_1, termbox.ColorWhite, termbox.ColorBlack)
-	view.drawText(10, 11, introtext_2, termbox.ColorWhite, termbox.ColorBlack)
-	view.drawText(10, 12, introtext_3, termbox.ColorWhite, termbox.ColorBlack)
-	view.drawText(10, 13, introtext_4, termbox.ColorWhite, termbox.ColorBlack)
-	view.drawText(10, 14, introtext_5, termbox.ColorWhite, termbox.ColorBlack)
-	view.drawText(10, 15, introtext_6, termbox.ColorWhite, termbox.ColorBlack)
+	for i := 0; i < 80; i++ {
+	view.drawText(i, 0, " ", termbox.ColorBlack, termbox.ColorYellow)
+	view.drawText(i, 23, " ", termbox.ColorBlack, termbox.ColorYellow)
+	}
+	for i := 0; i < 24; i++ {
+	view.drawText(0, i, " ", termbox.ColorBlack, termbox.ColorYellow)
+	view.drawText(79, i, " ", termbox.ColorBlack, termbox.ColorYellow)
+	}
+                                                      
+	introtext_1 :="███╗   ███╗ ██████╗ ██████╗  █████╗ ███╗   ██╗ █████╗ "
+	introtext_2 :="████╗ ████║██╔═══██╗██╔══██╗██╔══██╗████╗  ██║██╔══██╗"
+	introtext_3 :="██╔████╔██║██║   ██║██████╔╝███████║██╔██╗ ██║███████║"
+	introtext_4 :="██║╚██╔╝██║██║   ██║██╔══██╗██╔══██║██║╚██╗██║██╔══██║"
+	introtext_5 :="██║ ╚═╝ ██║╚██████╔╝██║  ██║██║  ██║██║ ╚████║██║  ██║"
+	introtext_6 :="╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝"
+	view.drawText(13, 9, introtext_1, termbox.ColorWhite, termbox.ColorBlack)
+	view.drawText(13, 10, introtext_2, termbox.ColorWhite, termbox.ColorBlack)
+	view.drawText(13, 11, introtext_3, termbox.ColorWhite, termbox.ColorBlack)
+	view.drawText(13, 12, introtext_4, termbox.ColorWhite, termbox.ColorBlack)
+	view.drawText(13, 13, introtext_5, termbox.ColorWhite, termbox.ColorBlack)
+	view.drawText(13, 14, introtext_6, termbox.ColorWhite, termbox.ColorBlack)
+
+	desctext :="A roguelite with a nice intro screen and not much else"
+	view.drawText(13, 16, desctext, termbox.ColorWhite, termbox.ColorBlack)
 }
 
 func (view *View) drawVictoryLine() {
@@ -83,8 +95,10 @@ func (view *View) drawBar() {
 }
 
 func (view *View) drawText(x int, y int, text string, fg termbox.Attribute, bg termbox.Attribute) {
-	for index, char := range text {
+	index := 0
+	for _, char := range text {
 		termbox.SetCell(x+index, y, rune(char), fg, bg)
+		index++
 	}
 }
 
