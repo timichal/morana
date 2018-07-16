@@ -23,11 +23,14 @@ func (engine *Engine) run() {
 	for {
 		select {
 		case <-engine.chanStop:
-			break 
+			break
 		case event = <-engine.KeyInput.chanKeyInput:
 			engine.KeyInput.ProcessEvent(event)
 			view.refresh()
-
 		}
 	}
-}	
+}
+
+func (engine *Engine) stop() {
+	close(engine.chanStop)
+}

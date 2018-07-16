@@ -9,28 +9,17 @@ import (
 	"os"
 )
 
-func NewKeyInput() *KeyInput {
-	return &KeyInput{
-		chanStop:     make(chan struct{}, 1),
+func NewKeyInput() KeyInput {
+	return KeyInput{
 		chanKeyInput: make(chan *termbox.Event, 8),
 	}
 }
 
 func (keyInput *KeyInput) Run() {
-loop:
 	for {
-		select {
-		case <-keyInput.chanStop:
-			break loop
-		default:
-		}
 		event := termbox.PollEvent()
 		if event.Type == termbox.EventKey && len(keyInput.chanKeyInput) < 8 {
-			select {
-			case <-keyInput.chanStop:
-				break loop
-			case keyInput.chanKeyInput <- &event:
-			}
+			keyInput.chanKeyInput <- &event
 		}
 	}
 }
@@ -58,7 +47,6 @@ func (keyInput *KeyInput) ProcessEvent(event *termbox.Event) {
 			player.move("NW")
 		}
 	case engine.State == "Intro":
-		//termbox.Close()
 		engine.State = "GameOn"
 	}
 

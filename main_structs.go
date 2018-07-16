@@ -6,20 +6,27 @@ package main
 
 import "github.com/nsf/termbox-go"
 
+const (
+	viewWidth   = 80
+	viewHeight  = 24
+	floorWidth  = 80
+	floorHeight = 20
+)
+
 type (
 	Engine struct {
 		chanStop     chan struct{}
 		CurrentFloor string
 		State        string
-		KeyInput     *KeyInput
+		KeyInput     KeyInput
 	}
 
 	View struct {
+		width  int
+		height int
 	}
 
 	KeyInput struct {
-		stopped      bool
-		chanStop     chan struct{}
 		chanKeyInput chan *termbox.Event
 	}
 
@@ -32,7 +39,7 @@ type (
 
 	FloorMap map[string]Floor
 
-	Floor [50][20]Tile
+	Floor [floorWidth][floorHeight]Tile
 
 	Tile struct {
 		//empty: . / wall: #
@@ -56,10 +63,11 @@ type (
 )
 
 var (
-	view     View
-	keyInput KeyInput
-	engine   Engine
-	player   Player
-	tileset  = make(Tileset)
-	floormap = make(FloorMap)
+	view      View
+	keyInput  KeyInput
+	engine    Engine
+	player    Player
+	debugText string
+	tileset   = make(Tileset)
+	floormap  = make(FloorMap)
 )

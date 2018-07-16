@@ -3,6 +3,8 @@
 todo:
 * floor switcher
 * fix restart
-* intro screen (engine states)
-* term size: 80x24 - to variables
+* engine states
+* clean engine stopping (lift from gotetris)
+* refactor: methods with Capitals, struct parameters with mixedCase
 * for cycle for unicode strings
+* map generator: rooms connected with corridors

@@ -8,8 +8,6 @@ import (
 //"github.com/nsf/termbox-go"
 )
 
-var debugtext string
-
 // main() tailored to termbox
 func main() {
 
@@ -21,6 +19,7 @@ func main() {
 	initView()
 	// main loop
 	engine.run()
+	view.stop()
 }
 
 func gameInit() {

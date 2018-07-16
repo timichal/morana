@@ -1,6 +1,6 @@
 /*
 floor generator
-floor is 50x20 with . as empty spaces, # as wall
+floor is 80x20 with . as empty spaces, # as wall
 */
 package main
 
