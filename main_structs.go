@@ -15,10 +15,10 @@ const (
 
 type (
 	Engine struct {
-		chanStop     chan struct{}
-		CurrentFloor string
-		State        string
-		KeyInput     KeyInput
+		chanStop chan struct{}
+		// engine states: Intro, GameOn, Victory
+		State    string
+		KeyInput KeyInput
 	}
 
 	View struct {
@@ -51,14 +51,14 @@ type (
 	}
 
 	Player struct {
-		Name   string
-		Level  int
-		HP     int
-		Attack int
-		Floor  string
-		PosX   int
-		PosY   int
-		Moves  int
+		Name         string
+		Level        int
+		HP           int
+		Attack       int
+		PosX         int
+		PosY         int
+		Moves        int
+		CurrentFloor string
 	}
 )
 

@@ -5,10 +5,10 @@ package main
 
 func initPlayer() {
 	player = Player{
-		Name:  "Bob",
-		Level: 1,
-		HP:    100,
-		Floor: "0"}
+		Name:         "Bob",
+		CurrentFloor: "0",
+		Level:        1,
+		HP:           100}
 }
 
 // positioning the player to stairs down
@@ -26,7 +26,7 @@ func (player *Player) position(floor Floor) {
 
 func (player *Player) move(dir string) {
 	NewPosX, NewPosY := bydir(player.PosX, player.PosY, dir, 1)
-	if tileset[floormap[player.Floor][NewPosX][NewPosY].TileType].Passable {
+	if tileset[floormap[player.CurrentFloor][NewPosX][NewPosY].TileType].Passable {
 		player.PosX, player.PosY = NewPosX, NewPosY
 		player.Moves++
 		floorevents()

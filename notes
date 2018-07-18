@@ -2,9 +2,6 @@
 
 todo:
 * floor switcher
-* fix restart
-* engine states
-* clean engine stopping (lift from gotetris)
+* fix broken input after restart
 * refactor: methods with Capitals, struct parameters with mixedCase
-* for cycle for unicode strings
 * map generator: rooms connected with corridors

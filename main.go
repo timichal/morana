@@ -10,18 +10,23 @@ import (
 
 // main() tailored to termbox
 func main() {
-
 	initEngine()
 	initTileset()
+	engine.State = "Intro"
 	initMap()
 	initPlayer()
 	player.position(floormap["0"])
 	initView()
+	view.run()
 	// main loop
 	engine.run()
 	view.stop()
 }
 
-func gameInit() {
-
+func restart() {
+	engine.State = "Intro"
+	initMap()
+	initPlayer()
+	player.position(floormap["0"])
+	view.refresh()
 }

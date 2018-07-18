@@ -6,7 +6,6 @@ package main
 
 import (
 	"github.com/nsf/termbox-go"
-	"os"
 )
 
 func NewKeyInput() KeyInput {
@@ -19,14 +18,15 @@ func (keyInput *KeyInput) Run() {
 	for {
 		event := termbox.PollEvent()
 		if event.Type == termbox.EventKey && len(keyInput.chanKeyInput) < 8 {
-			keyInput.chanKeyInput <- &event
+			select {
+			case keyInput.chanKeyInput <- &event:
+			}
 		}
 	}
 }
 
 func (keyInput *KeyInput) ProcessEvent(event *termbox.Event) {
-	switch {
-	case engine.State == "GameOn":
+	if engine.State == "GameOn" {
 		// player movement
 		switch {
 		case event.Key == termbox.KeyArrowUp || event.Ch == '8':
@@ -46,17 +46,21 @@ func (keyInput *KeyInput) ProcessEvent(event *termbox.Event) {
 		case event.Ch == '7':
 			player.move("NW")
 		}
-	case engine.State == "Intro":
+	}
+	if engine.State == "Intro" {
 		engine.State = "GameOn"
+		return
+	}
+	// so holding r doesn't loop the intro screen
+	if engine.State != "Intro" {
+		if event.Ch == 'r' {
+		restart()
+		}
 	}
 
 	// exit keys
 	if event.Key == termbox.KeyEsc || event.Ch == 'q' {
-		view.stop()
-		os.Exit(0)
+		engine.Stop()
 	}
 
-	if event.Ch == 'r' {
-		gameInit()
-	}
 }

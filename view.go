@@ -6,7 +6,7 @@ package main
 
 import (
 	"github.com/nsf/termbox-go"
-	"os"
+	//"fmt"
 	"strconv"
 	"unicode/utf8"
 )
@@ -16,7 +16,9 @@ func initView() {
 	if err != nil {
 		panic(err)
 	}
+}
 
+func (view *View) run() {
 	view.width = viewWidth
 	view.height = viewHeight
 
@@ -28,26 +30,23 @@ func (view *View) stop() {
 }
 
 func (view *View) refresh() {
-	debugtext := "This is the debug bar"
 	termbox.Clear(termbox.ColorDefault, termbox.ColorDefault)
 
 	// input handling
 	switch engine.State {
 	case "Intro":
+		debugText = "This is the debug bar"
 		view.drawIntro()
 	case "GameOn":
 		view.drawTopBar()
 		// drawing the main screen
-		view.drawMap(engine.CurrentFloor)
+		view.drawMap(player.CurrentFloor)
 		// drawing the bottom bar
 		view.drawBottomBar()
-
-		view.drawDebugBar(debugtext)
+		view.drawDebugBar(debugText)
 	case "Victory":
+		view.drawMap(player.CurrentFloor)
 		view.drawVictoryLine()
-	default:
-		view.stop()
-		os.Exit(0)
 	}
 	termbox.Flush()
 }
@@ -85,7 +84,7 @@ func (view *View) drawIntro() {
 
 func (view *View) drawVictoryLine() {
 	bartext := "You win! Press r to restart or esc/q to quit"
-	view.drawText(0, 20, bartext, termbox.ColorWhite, termbox.ColorBlack)
+	view.drawText(0, view.height-3, bartext, termbox.ColorWhite, termbox.ColorBlack)
 }
 
 func (view *View) drawTopBar() {
@@ -107,7 +106,7 @@ func (view *View) drawMap(floor string) {
 
 func (view *View) drawBottomBar() {
 	bartext := "Name: " + player.Name + " | Level " + strconv.Itoa(player.Level) + " | HP " + strconv.Itoa(player.HP) + " | Moves " + strconv.Itoa(player.Moves)
-	bartext2 := "I guess something will be here as well"
+	bartext2 := "arrow keys/numpad to move | r to restart | esc/q to quit | reach the V to win"
 	view.drawText(0, view.height-3, bartext, termbox.ColorWhite, termbox.ColorBlack)
 	view.drawText(0, view.height-2, bartext2, termbox.ColorWhite, termbox.ColorBlack)
 }

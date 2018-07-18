@@ -8,10 +8,7 @@ import "github.com/nsf/termbox-go"
 
 func initEngine() {
 	engine = Engine{
-		chanStop: make(chan struct{}, 1),
-		// engine states: Intro, GameOn, Victory
-		State:        "Intro",
-		CurrentFloor: "0"}
+		chanStop: make(chan struct{}, 1)}
 }
 
 func (engine *Engine) run() {
@@ -20,17 +17,23 @@ func (engine *Engine) run() {
 
 	var event *termbox.Event
 
+loop:
 	for {
 		select {
 		case <-engine.chanStop:
-			break
-		case event = <-engine.KeyInput.chanKeyInput:
-			engine.KeyInput.ProcessEvent(event)
-			view.refresh()
+			break loop
+		default:
+			select {
+			case event = <-engine.KeyInput.chanKeyInput:
+				engine.KeyInput.ProcessEvent(event)
+				view.refresh()
+			case <-engine.chanStop:
+				break loop
+			}
 		}
 	}
 }
 
-func (engine *Engine) stop() {
+func (engine *Engine) Stop() {
 	close(engine.chanStop)
 }
