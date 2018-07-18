@@ -11,6 +11,13 @@ const (
 	viewHeight  = 24
 	floorWidth  = 80
 	floorHeight = 20
+
+	minRoomWidth  = 3
+	minRoomHeight  = 3
+	maxRoomWidth  = 15
+	maxRoomHeight = 5
+	maxRoomAttempts = 25
+	minRoomSpacing = 5
 )
 
 type (
@@ -38,6 +45,8 @@ type (
 	}
 
 	FloorMap map[string]Floor
+
+	FloorGen struct{}
 
 	Floor [floorWidth][floorHeight]Tile
 

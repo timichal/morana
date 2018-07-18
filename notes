@@ -1,7 +1,9 @@
 * separate backend and frontend
 
 todo:
-* floor switcher
-* fix broken input after restart
-* refactor: methods with Capitals, struct parameters with mixedCase
 * map generator: rooms connected with corridors
+//mapgen bug: doesnt generate a room when not meeting conditions
+//mapgenbug: +1 on x/y (can get out of bounds @ other edge)
+
+* floor switcher
+* refactor: methods with Capitals, struct parameters with mixedCase

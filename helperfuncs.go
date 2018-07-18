@@ -12,6 +12,20 @@ import (
 	"time"
 )
 
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
 // generating a random int [0,n)
 func randomInt(upper int) int {
 	randseed := rand.NewSource(time.Now().UnixNano())

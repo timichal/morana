@@ -26,10 +26,12 @@ func (player *Player) position(floor Floor) {
 
 func (player *Player) move(dir string) {
 	NewPosX, NewPosY := bydir(player.PosX, player.PosY, dir, 1)
-	if tileset[floormap[player.CurrentFloor][NewPosX][NewPosY].TileType].Passable {
-		player.PosX, player.PosY = NewPosX, NewPosY
-		player.Moves++
-		floorevents()
+	if (NewPosX >= 0) && (NewPosX < floorWidth) && (0 <= NewPosY) && (NewPosY < floorHeight) {
+		if tileset[floormap[player.CurrentFloor][NewPosX][NewPosY].TileType].Passable {
+			player.PosX, player.PosY = NewPosX, NewPosY
+			player.Moves++
+			floorevents()
+		}
 	}
 
 }

@@ -35,7 +35,7 @@ func (view *View) refresh() {
 	// input handling
 	switch engine.State {
 	case "Intro":
-		debugText = "This is the debug bar"
+		//debugText = "This is the debug bar"
 		view.drawIntro()
 	case "GameOn":
 		view.drawTopBar()

@@ -12,21 +12,17 @@ import (
 func main() {
 	initEngine()
 	initTileset()
-	engine.State = "Intro"
-	initMap()
-	initPlayer()
-	player.position(floormap["0"])
 	initView()
-	view.run()
+	initGame()
 	// main loop
 	engine.run()
 	view.stop()
 }
 
-func restart() {
+func initGame() {
 	engine.State = "Intro"
 	initMap()
 	initPlayer()
 	player.position(floormap["0"])
-	view.refresh()
+	view.run()
 }

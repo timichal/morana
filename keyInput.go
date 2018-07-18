@@ -54,7 +54,7 @@ func (keyInput *KeyInput) ProcessEvent(event *termbox.Event) {
 	// so holding r doesn't loop the intro screen
 	if engine.State != "Intro" {
 		if event.Ch == 'r' {
-		restart()
+			initGame()
 		}
 	}
 
