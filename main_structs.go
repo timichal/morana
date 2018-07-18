@@ -12,12 +12,14 @@ const (
 	floorWidth  = 80
 	floorHeight = 20
 
-	minRoomWidth  = 3
-	minRoomHeight  = 3
-	maxRoomWidth  = 15
-	maxRoomHeight = 5
-	maxRoomAttempts = 25
-	minRoomSpacing = 5
+	minRoomWidth = 4
+	maxRoomWidth = 15
+
+	minRoomHeight = 3
+	maxRoomHeight = 6
+
+	maxRoomAttempts = 30
+	minRoomSpacing  = 5
 )
 
 type (
@@ -31,6 +33,13 @@ type (
 	View struct {
 		width  int
 		height int
+	}
+
+	PathCoords []Coord
+
+	Coord struct {
+		X int
+		Y int
 	}
 
 	KeyInput struct {
@@ -49,6 +58,16 @@ type (
 	FloorGen struct{}
 
 	Floor [floorWidth][floorHeight]Tile
+
+	Rooms []Room
+
+	Room struct {
+		topLeftCoord Coord
+		pathCoord    Coord
+		width        int
+		height       int
+		isValid      bool
+	}
 
 	Tile struct {
 		//empty: . / wall: #

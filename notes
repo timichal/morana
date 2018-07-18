@@ -1,9 +1,12 @@
 * separate backend and frontend
 
 todo:
-* map generator: rooms connected with corridors
-//mapgen bug: doesnt generate a room when not meeting conditions
-//mapgenbug: +1 on x/y (can get out of bounds @ other edge)
+* redefine rooms as struct
+* map generator: corridors
+	* for each room, select edge point -> edge point loc list
+	* for each edge point, a connection to random edge point
+		* connection by an algorithm. when path digging hits '.', set '.' as isConnected
+		* after each edgepoint, reiterate room list and remove isConnected
 
 * floor switcher
 * refactor: methods with Capitals, struct parameters with mixedCase
