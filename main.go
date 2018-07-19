@@ -33,7 +33,7 @@ func initGame() {
 // logging
 func initLogger() {
 	logger = log.New(os.Stderr, "", log.Ldate|log.Ltime|log.LUTC|log.Llongfile)
-	logFile, err := os.OpenFile("./go-tetris.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	logFile, err := os.OpenFile("./morana.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
 		log.Fatal("error opening logFile:", err)
 	}
