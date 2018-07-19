@@ -12,15 +12,7 @@ import (
 
 // main() tailored to termbox
 func main() {
-	//logging
-	logger = log.New(os.Stderr, "", log.Ldate|log.Ltime|log.LUTC|log.Llongfile)
-	logFile, err := os.OpenFile("./go-tetris.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-	if err != nil {
-		log.Fatal("error opening logFile:", err)
-	}
-	defer logFile.Close()
-	logger.SetOutput(logFile)
-
+	initLogger()
 	initEngine()
 	initTileset()
 	initView()
@@ -34,6 +26,17 @@ func initGame() {
 	engine.State = "Intro"
 	initMap()
 	initPlayer()
-	player.position(floormap["0"])
+	placePlayer(player.currentFloor, 'E')
 	view.run()
+}
+
+// logging
+func initLogger() {
+	logger = log.New(os.Stderr, "", log.Ldate|log.Ltime|log.LUTC|log.Llongfile)
+	logFile, err := os.OpenFile("./go-tetris.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		log.Fatal("error opening logFile:", err)
+	}
+	defer logFile.Close()
+	logger.SetOutput(logFile)
 }

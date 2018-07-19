@@ -1,7 +1,8 @@
 * separate backend and frontend
 
 todo:
-* floor switcher
+* visible algorithm
+
 
 * map generator: better pathfinding
 	* for each room, select edge point -> edge point loc list
@@ -13,3 +14,9 @@ todo:
 * refactor: methods with Capitals, struct parameters with mixedCase
 
 * floor as struct with rooms attached
+
+* currently: '<' as downstairs, 'E' on floor 0; change?
+
+* tidying up: 
+    * placePlayer() / switchFloors() as methods of gameMap?
+    * floorgen as struct with floor & floorname

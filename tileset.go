@@ -14,9 +14,19 @@ func initTileset() {
 		Name:     "Wall",
 		Passable: false}
 
+	//tower entrance/exit
+	tileset['E'] = TileType{
+		Name:     "Entrance",
+		Passable: true}
+
 	//stairs down
 	tileset['<'] = TileType{
 		Name:     "Stairs down",
+		Passable: true}
+
+	//stairs up
+	tileset['>'] = TileType{
+		Name:     "Stairs up",
 		Passable: true}
 
 	//victory flag

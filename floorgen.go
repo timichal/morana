@@ -9,26 +9,25 @@ import (
 )
 
 //initial work - generate some rooms & use a pathfinding algorithm to connect them
-func floorgenNew() Floor {
-	var floor Floor
-	var floorgen FloorGen
-	var rooms Rooms
+func generateFloor(floorName string) Floor {
+	var floorgen = FloorGen{
+		floorName: floorName}
 
 	// filling the floor with walls
-	floor = floorgen.fillFloor(floor)
+	floorgen.fillFloor()
 
-	// generating rooms for n attempts
+	// generating possible room attempts, capped at maxRoomAttempts)
 	for roomAttempts := 0; roomAttempts < maxRoomAttempts; roomAttempts++ {
-		rooms = append(rooms, floorgen.genRoom())
+		floorgen.rooms = append(floorgen.rooms, floorgen.generateRoom())
 	}
 
-	// check for overlap/closeness
-	for i, room := range rooms {
-		for j, cmpRoom := range rooms {
-			if j > i {
+	// check for overlap
+	for i, room := range floorgen.rooms {
+		for j, cmpRoom := range floorgen.rooms {
+			if j < i {
 				if cmpRoom.isValid {
 					if floorgen.isOverlapping(room, cmpRoom) {
-						rooms[i].isValid = false
+						floorgen.rooms[i].isValid = false
 						break
 					}
 				}
@@ -38,33 +37,72 @@ func floorgenNew() Floor {
 
 	// filter out invalid rooms
 	var validRooms Rooms
-	for _, room := range rooms {
-		logger.Println(room)
+	for _, room := range floorgen.rooms {
 		if room.isValid {
 			validRooms = append(validRooms, room)
 		}
 	}
-	rooms = validRooms
+	floorgen.rooms = validRooms
 
-	// draw the rooms on the map
-	for ind, room := range rooms {
+	// carve the rooms into the map
+	for ind, room := range floorgen.rooms {
 		for i := 0; i < room.width; i++ {
 			for j := 0; j < room.height; j++ {
-				floor[room.topLeftCoord.X+i][room.topLeftCoord.Y+j] = floorgen.genTile('.')
+				floorgen.floor[room.topLeftCoord.X+i][room.topLeftCoord.Y+j] = floorgen.genTile('.')
 			}
 		}
 
-		// has to be an edge coord!
+		// setting random point in room for pathfinding
 		roomPathCoordX := room.topLeftCoord.X + randomInt(room.width)
 		roomPathCoordY := room.topLeftCoord.Y + randomInt(room.height)
-		rooms[ind].pathCoord = Coord{roomPathCoordX, roomPathCoordY}
+		floorgen.rooms[ind].pathCoord = Coord{roomPathCoordX, roomPathCoordY}
 	}
 
-	debugText = fmt.Sprintln(rooms)
-
 	// rudimentary pathfinding
-	for i, room := range rooms {
-		for j, cmpRoom := range rooms {
+	floorgen.roomPathFind()
+
+	// floor specific features
+	floorgen.placeSpecifics()
+
+	return floorgen.floor
+}
+
+// shamelessly stolen logic thingy
+func (floorgen *FloorGen) isOverlapping(room, otherroom Room) bool {
+	return (room.topLeftCoord.X <= otherroom.topLeftCoord.X+otherroom.width+1) &&
+		(room.topLeftCoord.X+room.width >= otherroom.topLeftCoord.X-1) &&
+		(room.topLeftCoord.Y <= otherroom.topLeftCoord.Y+otherroom.height+1) &&
+		(room.topLeftCoord.Y+room.height >= otherroom.topLeftCoord.Y-1)
+}
+
+func (floorgen *FloorGen) fillFloor() {
+	for i, row := range floorgen.floor {
+		for j := range row {
+			floorgen.floor[i][j] = floorgen.genTile('#')
+		}
+	}
+}
+
+func (floorgen *FloorGen) generateRoom() Room {
+	for {
+		roomTopLeftX, roomTopLeftY := randomInt(floorWidth-minRoomWidth), randomInt(floorHeight-minRoomHeight)
+
+		roomWidth := randomInt(maxRoomWidth-minRoomWidth+1) + minRoomWidth
+		roomHeight := randomInt(maxRoomHeight-minRoomHeight+1) + minRoomHeight
+
+		if (roomTopLeftX+roomWidth <= floorWidth) && (roomTopLeftY+roomHeight <= floorHeight) {
+			return Room{Coord{roomTopLeftX, roomTopLeftY}, Coord{-1, -1}, roomWidth, roomHeight, true}
+		}
+	}
+}
+
+func (floorgen *FloorGen) genTile(tiletype rune) Tile {
+	return Tile{TileType: tiletype}
+}
+
+func (floorgen *FloorGen) roomPathFind() {
+	for i, room := range floorgen.rooms {
+		for j, cmpRoom := range floorgen.rooms {
 			if j > i {
 				debugText = fmt.Sprintln(room.pathCoord, cmpRoom.pathCoord)
 
@@ -82,7 +120,7 @@ func floorgenNew() Floor {
 
 				for srcX != destX {
 					srcX++
-					floor[srcX][srcY] = floorgen.genTile('.')
+					floorgen.floor[srcX][srcY] = floorgen.genTile('.')
 				}
 
 				for srcY != destY {
@@ -91,68 +129,45 @@ func floorgenNew() Floor {
 					} else {
 						srcY--
 					}
-					floor[srcX][srcY] = floorgen.genTile('.')
+					floorgen.floor[srcX][srcY] = floorgen.genTile('.')
 				}
 				break
 			}
 		}
 	}
+}
 
-	// stairs down (for now)
+func (floorgen *FloorGen) placeSpecifics() {
+	floorname := floorgen.floorName
+	//first floor
+	if floorname == gameMap.floorList[0] {
+		// place entrance
+		floorgen.placeRandom('E')
+		//all except first floor
+	} else {
+		//place stairs down
+		floorgen.placeRandom('<')
+	}
+
+	//last floor
+	if floorname == gameMap.floorList[len(gameMap.floorList)-1] {
+		// place victory flag
+		floorgen.placeRandom('V')
+		//all except last floor
+	} else {
+		// place stairs up
+		floorgen.placeRandom('>')
+	}
+}
+
+func (floorgen *FloorGen) placeRandom(tileType rune) {
 	for {
-		stairsx := randomInt(floorWidth)
-		stairsy := randomInt(floorHeight)
+		x := randomInt(floorWidth)
+		y := randomInt(floorHeight)
 
-		if floor[stairsx][stairsy].TileType == '.' {
-			floor[stairsx][stairsy] = floorgen.genTile('<')
+		if floorgen.floor[x][y].TileType == '.' {
+			floorgen.floor[x][y] = floorgen.genTile(tileType)
 			break
 		}
 	}
-
-	// v-flag
-	for {
-		victx := randomInt(floorWidth)
-		victy := randomInt(floorHeight)
-
-		if floor[victx][victy].TileType == '.' {
-			floor[victx][victy] = floorgen.genTile('V')
-			break
-		}
-	}
-
-	return floor
-}
-
-// shamelessly stolen logic thingy
-func (floorgen *FloorGen) isOverlapping(room, otherroom Room) bool {
-	return (room.topLeftCoord.X <= otherroom.topLeftCoord.X+otherroom.width+1) &&
-		(room.topLeftCoord.X+room.width >= otherroom.topLeftCoord.X-1) &&
-		(room.topLeftCoord.Y <= otherroom.topLeftCoord.Y+otherroom.height+1) &&
-		(room.topLeftCoord.Y+room.height >= otherroom.topLeftCoord.Y-1)
-}
-
-func (floorgen *FloorGen) fillFloor(floor Floor) Floor {
-	for i, row := range floor {
-		for j := range row {
-			floor[i][j] = floorgen.genTile('#')
-		}
-	}
-	return floor
-}
-
-func (floorgen *FloorGen) genRoom() Room {
-	for {
-		roomTopLeftX, roomTopLeftY := randomInt(floorWidth-minRoomWidth), randomInt(floorHeight-minRoomHeight)
-
-		roomWidth := randomInt(maxRoomWidth-minRoomWidth+1) + minRoomWidth
-		roomHeight := randomInt(maxRoomHeight-minRoomHeight+1) + minRoomHeight
-
-		if (roomTopLeftX+roomWidth <= floorWidth) && (roomTopLeftY+roomHeight <= floorHeight) {
-			return Room{Coord{roomTopLeftX, roomTopLeftY}, Coord{-1, -1}, roomWidth, roomHeight, true}
-		}
-	}
-}
-
-func (floorgen *FloorGen) genTile(tiletype rune) Tile {
-	return Tile{TileType: tiletype}
 }

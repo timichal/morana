@@ -23,7 +23,7 @@ const (
 	minRoomHeight = 3
 	maxRoomHeight = 6
 
-	maxRoomAttempts = 300
+	maxRoomAttempts = 30
 )
 
 type (
@@ -57,9 +57,20 @@ type (
 		Passable bool
 	}
 
+	GameMap struct {
+		floorList FloorList
+		floorMap  FloorMap
+	}
+
+	FloorList []string
+
 	FloorMap map[string]Floor
 
-	FloorGen struct{}
+	FloorGen struct {
+		floorName string
+		floor     Floor
+		rooms     Rooms
+	}
 
 	Floor [floorWidth][floorHeight]Tile
 
@@ -90,7 +101,7 @@ type (
 		PosX         int
 		PosY         int
 		Moves        int
-		CurrentFloor string
+		currentFloor string
 	}
 )
 
@@ -100,8 +111,9 @@ var (
 	keyInput  KeyInput
 	engine    Engine
 	player    Player
+	gameMap   GameMap
+	floorgen  FloorGen
 	debugText string
 	logger    *log.Logger
 	tileset   = make(Tileset)
-	floormap  = make(FloorMap)
 )
