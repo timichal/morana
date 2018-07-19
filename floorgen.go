@@ -39,6 +39,7 @@ func floorgenNew() Floor {
 	// filter out invalid rooms
 	var validRooms Rooms
 	for _, room := range rooms {
+		logger.Println(room)
 		if room.isValid {
 			validRooms = append(validRooms, room)
 		}
@@ -76,14 +77,14 @@ func floorgenNew() Floor {
 				} else {
 					destX = room.pathCoord.X
 					srcY = cmpRoom.pathCoord.Y
-					destY = room.pathCoord.Y	
+					destY = room.pathCoord.Y
 				}
 
 				for srcX != destX {
 					srcX++
 					floor[srcX][srcY] = floorgen.genTile('.')
 				}
-				
+
 				for srcY != destY {
 					if srcY < destY {
 						srcY++
@@ -91,11 +92,11 @@ func floorgenNew() Floor {
 						srcY--
 					}
 					floor[srcX][srcY] = floorgen.genTile('.')
-				}				
+				}
 				break
 			}
 		}
-	}	
+	}
 
 	// stairs down (for now)
 	for {

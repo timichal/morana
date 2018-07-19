@@ -4,7 +4,12 @@ main structures and instantiations used all over
 
 package main
 
-import "github.com/nsf/termbox-go"
+import (
+	"github.com/nsf/termbox-go"
+	"log"
+	"math/rand"
+	"time"
+)
 
 const (
 	viewWidth   = 80
@@ -18,8 +23,7 @@ const (
 	minRoomHeight = 3
 	maxRoomHeight = 6
 
-	maxRoomAttempts = 30
-	minRoomSpacing  = 5
+	maxRoomAttempts = 300
 )
 
 type (
@@ -91,11 +95,13 @@ type (
 )
 
 var (
+	randseed  = rand.NewSource(time.Now().UnixNano())
 	view      View
 	keyInput  KeyInput
 	engine    Engine
 	player    Player
 	debugText string
+	logger    *log.Logger
 	tileset   = make(Tileset)
 	floormap  = make(FloorMap)
 )

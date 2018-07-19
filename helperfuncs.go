@@ -9,7 +9,6 @@ import (
 	"github.com/nsf/termbox-go"
 	"math/rand"
 	"os"
-	"time"
 )
 
 func min(a, b int) int {
@@ -28,7 +27,6 @@ func max(a, b int) int {
 
 // generating a random int [0,n)
 func randomInt(upper int) int {
-	randseed := rand.NewSource(time.Now().UnixNano())
 	randsrc := rand.New(randseed)
 
 	return randsrc.Intn(upper)
