@@ -1,12 +1,15 @@
 * separate backend and frontend
 
 todo:
-* redefine rooms as struct
-* map generator: corridors
+* floor switcher
+
+* map generator: better pathfinding
 	* for each room, select edge point -> edge point loc list
 	* for each edge point, a connection to random edge point
 		* connection by an algorithm. when path digging hits '.', set '.' as isConnected
 		* after each edgepoint, reiterate room list and remove isConnected
 
-* floor switcher
+
 * refactor: methods with Capitals, struct parameters with mixedCase
+
+* floor as struct with rooms attached
