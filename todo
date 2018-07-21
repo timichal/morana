@@ -3,7 +3,6 @@ todo:
 
 * visibility algorithm
 
-
 * map generator: better pathfinding
 	* for each room, select edge point -> edge point loc list
 	* for each edge point, a connection to random edge point
