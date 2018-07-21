@@ -34,6 +34,6 @@ loop:
 	}
 }
 
-func (engine *Engine) Stop() {
+func (engine *Engine) stop() {
 	close(engine.chanStop)
 }

@@ -5,32 +5,32 @@ package main
 
 func initTileset() {
 	//basic empty floor
-	tileset['.'] = TileType{
+	tileset['.'] = TileDef{
 		Name:     "Floor",
 		Passable: true}
 
 	//wall
-	tileset['#'] = TileType{
+	tileset['#'] = TileDef{
 		Name:     "Wall",
 		Passable: false}
 
 	//tower entrance/exit
-	tileset['E'] = TileType{
+	tileset['E'] = TileDef{
 		Name:     "Entrance",
 		Passable: true}
 
 	//stairs down
-	tileset['<'] = TileType{
+	tileset['<'] = TileDef{
 		Name:     "Stairs down",
 		Passable: true}
 
 	//stairs up
-	tileset['>'] = TileType{
+	tileset['>'] = TileDef{
 		Name:     "Stairs up",
 		Passable: true}
 
 	//victory flag
-	tileset['V'] = TileType{
+	tileset['V'] = TileDef{
 		Name:     "Victory",
 		Passable: true}
 }

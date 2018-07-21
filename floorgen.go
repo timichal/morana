@@ -9,7 +9,7 @@ import (
 )
 
 //initial work - generate some rooms & use a pathfinding algorithm to connect them
-func generateFloor(floorName string) Floor {
+func (gameMap *GameMap) generateFloor(floorName string) Floor {
 	var floorgen = FloorGen{
 		floorName: floorName}
 
@@ -140,7 +140,7 @@ func (floorgen *FloorGen) roomPathFind() {
 func (floorgen *FloorGen) placeSpecifics() {
 	floorname := floorgen.floorName
 	//first floor
-	if floorname == gameMap.floorList[0] {
+	if floorname == gameMap.progression[0] {
 		// place entrance
 		floorgen.placeRandom('E')
 		//all except first floor
@@ -150,7 +150,7 @@ func (floorgen *FloorGen) placeSpecifics() {
 	}
 
 	//last floor
-	if floorname == gameMap.floorList[len(gameMap.floorList)-1] {
+	if floorname == gameMap.progression[len(gameMap.progression)-1] {
 		// place victory flag
 		floorgen.placeRandom('V')
 		//all except last floor

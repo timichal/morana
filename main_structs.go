@@ -12,10 +12,11 @@ import (
 )
 
 const (
-	viewWidth   = 80
-	viewHeight  = 24
-	floorWidth  = 80
-	floorHeight = 20
+	viewWidth    = 80
+	viewHeight   = 24
+	topBarOffset = 1
+	floorWidth   = 80
+	floorHeight  = 20
 
 	minRoomWidth = 4
 	maxRoomWidth = 15
@@ -50,21 +51,41 @@ type (
 		chanKeyInput chan *termbox.Event
 	}
 
-	Tileset map[rune]TileType
+	Player struct {
+		Name         string
+		Level        int
+		HP           int
+		Attack       int
+		coord        Coord
+		moves        int
+		currentFloor string
+	}
 
-	TileType struct {
+	// monsters definitions: monsters.go
+	MonsterSet map[string]Monster
+
+	Monster struct {
+		name    string
+		group   rune
+		HP      int
+		attack  int
+		defense int
+	}
+
+	// tiles definitions: tileset.go
+	Tileset map[rune]TileDef
+
+	TileDef struct {
 		Name     string
 		Passable bool
 	}
 
+	// map hierarchy: map.go & floorgen.go
 	GameMap struct {
-		floorList FloorList
-		floorMap  FloorMap
+		progression []string
+		floorSet    map[string]Floor
+		floorIsGen map[string]bool
 	}
-
-	FloorList []string
-
-	FloorMap map[string]Floor
 
 	FloorGen struct {
 		floorName string
@@ -85,23 +106,8 @@ type (
 	}
 
 	Tile struct {
-		//empty: . / wall: #
 		TileType rune
 		Explored bool
-		Content  struct {
-			Player bool
-		}
-	}
-
-	Player struct {
-		Name         string
-		Level        int
-		HP           int
-		Attack       int
-		PosX         int
-		PosY         int
-		Moves        int
-		currentFloor string
 	}
 )
 
@@ -116,4 +122,5 @@ var (
 	debugText string
 	logger    *log.Logger
 	tileset   = make(Tileset)
+	monsters  = make(MonsterSet)
 )

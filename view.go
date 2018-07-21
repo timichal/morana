@@ -94,18 +94,18 @@ func (view *View) drawTopBar() {
 
 func (view *View) drawMap(floor string) {
 	// draw map by tile type
-	for x, row := range gameMap.floorMap[floor] {
+	for x, row := range gameMap.floorSet[floor] {
 		for y, tile := range row {
-			termbox.SetCell(x, y+1, tile.TileType, termbox.ColorGreen, termbox.ColorBlack)
+			termbox.SetCell(x, y+topBarOffset, tile.TileType, termbox.ColorGreen, termbox.ColorBlack)
 		}
 	}
 
 	// draw the player
-	termbox.SetCell(player.PosX, player.PosY+1, '@', termbox.ColorRed, termbox.ColorBlack)
+	termbox.SetCell(player.coord.X, player.coord.Y+topBarOffset, '@', termbox.ColorRed, termbox.ColorBlack)
 }
 
 func (view *View) drawBottomBar() {
-	bartext := "Name: " + player.Name + " | Floor " + player.currentFloor + " | Level " + strconv.Itoa(player.Level) + " | HP " + strconv.Itoa(player.HP) + " | Moves " + strconv.Itoa(player.Moves)
+	bartext := "Name: " + player.Name + " | Floor " + player.currentFloor + " | Level " + strconv.Itoa(player.Level) + " | HP " + strconv.Itoa(player.HP) + " | Moves " + strconv.Itoa(player.moves)
 	bartext2 := "arrow keys/numpad to move | r to restart | esc/q to quit | reach the V to win"
 	view.drawText(0, view.height-3, bartext, termbox.ColorWhite, termbox.ColorBlack)
 	view.drawText(0, view.height-2, bartext2, termbox.ColorWhite, termbox.ColorBlack)

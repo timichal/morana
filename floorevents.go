@@ -9,12 +9,12 @@ import (
 )
 
 func floorevents() {
-	switch gameMap.floorMap[player.currentFloor][player.PosX][player.PosY].TileType {
+	switch gameMap.floorSet[player.currentFloor][player.coord.X][player.coord.Y].TileType {
 	case 'V':
 		engine.State = "Victory"
 	case '>':
-		switchFloor("+1")
+		player.setFloor("+1")
 	case '<':
-		switchFloor("-1")
+		player.setFloor("-1")
 	}
 }

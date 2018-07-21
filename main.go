@@ -15,7 +15,10 @@ func main() {
 	initLogger()
 	initEngine()
 	initTileset()
+	initMonsters()
+
 	initView()
+
 	initGame()
 	// main loop
 	engine.run()
@@ -26,7 +29,6 @@ func initGame() {
 	engine.State = "Intro"
 	initMap()
 	initPlayer()
-	placePlayer(player.currentFloor, 'E')
 	view.run()
 }
 

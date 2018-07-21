@@ -60,7 +60,7 @@ func (keyInput *KeyInput) ProcessEvent(event *termbox.Event) {
 
 	// exit keys
 	if event.Key == termbox.KeyEsc || event.Ch == 'q' {
-		engine.Stop()
+		engine.stop()
 	}
 
 }
