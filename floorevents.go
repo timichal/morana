@@ -1,5 +1,7 @@
 /*
 stuff that happens to the player on the floor
+
+called from plater.move()
 */
 
 package main
@@ -9,7 +11,7 @@ import (
 )
 
 func floorevents() {
-	switch gameMap.floorSet[player.currentFloor][player.coord.X][player.coord.Y].TileType {
+	switch gameMap.floorSet[gameMap.getFloorIndex(player.currentFloor)].plan[player.coord.X][player.coord.Y].tileType {
 	case 'V':
 		engine.State = "Victory"
 	case '>':

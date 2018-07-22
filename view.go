@@ -5,8 +5,8 @@ methods handling the view = termbox frontend
 package main
 
 import (
+	"fmt"
 	"github.com/nsf/termbox-go"
-	//"fmt"
 	"strconv"
 	"unicode/utf8"
 )
@@ -94,14 +94,18 @@ func (view *View) drawTopBar() {
 
 func (view *View) drawMap(floor string) {
 	// draw map by tile type
-	for x, row := range gameMap.floorSet[floor] {
+	for x, row := range gameMap.floorSet[gameMap.getFloorIndex(floor)].plan {
 		for y, tile := range row {
-			termbox.SetCell(x, y+topBarOffset, tile.TileType, termbox.ColorGreen, termbox.ColorBlack)
+			termbox.SetCell(x, y+topBarOffset, tile.tileType, termbox.ColorGreen, termbox.ColorBlack)
+
+			debugText = fmt.Sprintln(tile)
+			for _, element := range tile.content {
+				if element == "player" {
+					termbox.SetCell(x, y+topBarOffset, '@', termbox.ColorYellow, termbox.ColorBlack)
+				}
+			}
 		}
 	}
-
-	// draw the player
-	termbox.SetCell(player.coord.X, player.coord.Y+topBarOffset, '@', termbox.ColorRed, termbox.ColorBlack)
 }
 
 func (view *View) drawBottomBar() {

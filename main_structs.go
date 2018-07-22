@@ -83,8 +83,13 @@ type (
 	// map hierarchy: map.go & floorgen.go
 	GameMap struct {
 		progression []string
-		floorSet    map[string]Floor
-		floorIsGen map[string]bool
+		floorSet    []FloorDesc
+		floorIsGen  []bool
+	}
+
+	FloorDesc struct {
+		name string
+		plan Floor
 	}
 
 	FloorGen struct {
@@ -106,8 +111,9 @@ type (
 	}
 
 	Tile struct {
-		TileType rune
-		Explored bool
+		tileType rune
+		explored bool
+		content  []string
 	}
 )
 

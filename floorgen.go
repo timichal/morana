@@ -97,7 +97,7 @@ func (floorgen *FloorGen) generateRoom() Room {
 }
 
 func (floorgen *FloorGen) genTile(tiletype rune) Tile {
-	return Tile{TileType: tiletype}
+	return Tile{tileType: tiletype}
 }
 
 func (floorgen *FloorGen) roomPathFind() {
@@ -160,13 +160,13 @@ func (floorgen *FloorGen) placeSpecifics() {
 	}
 }
 
-func (floorgen *FloorGen) placeRandom(tileType rune) {
+func (floorgen *FloorGen) placeRandom(tiletype rune) {
 	for {
 		x := randomInt(floorWidth)
 		y := randomInt(floorHeight)
 
-		if floorgen.floor[x][y].TileType == '.' {
-			floorgen.floor[x][y] = floorgen.genTile(tileType)
+		if floorgen.floor[x][y].tileType == '.' {
+			floorgen.floor[x][y] = floorgen.genTile(tiletype)
 			break
 		}
 	}

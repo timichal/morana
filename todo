@@ -1,5 +1,8 @@
 todo:
+* fix getFloorIndex()
+
 * monsters & melee
+    * tile content reworks
 
 * visibility algorithm
 
@@ -16,6 +19,3 @@ todo:
 * floor as struct with rooms attached
 
 * currently: '<' as downstairs, 'E' on floor 0; change?
-
-* tidying up: 
-    * placePlayer() as methods of gameMap?
