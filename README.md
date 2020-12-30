@@ -1,1 +1,1 @@
-Morana is a stab at a roguelite made in Go. Set in near future, our hero sets to explore the tower of Morana filled with robots and mysterious metallic contructs. Reaching the top will reveal the tower's secrets; failing will pave the way for the hero's successors.
+Morana is a stab at a roguelite made in Go. Our hero sets to explore the tower of Morana. Hilarity ensues.
