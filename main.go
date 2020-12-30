@@ -67,19 +67,19 @@ func (g *Game) Update() error {
 	}
 
 	if canMove == true {
-		if ebiten.IsKeyPressed(ebiten.KeyUp) {
+		if ebiten.IsKeyPressed(ebiten.KeyUp) && playerOne.yPos > 0 {
 			playerOne.yPos -= playerOne.speed
 			canMove = false
 		}
-		if ebiten.IsKeyPressed(ebiten.KeyDown) {
+		if ebiten.IsKeyPressed(ebiten.KeyDown) && playerOne.yPos < tileSize*14 {
 			playerOne.yPos += playerOne.speed
 			canMove = false
 		}
-		if ebiten.IsKeyPressed(ebiten.KeyLeft) {
+		if ebiten.IsKeyPressed(ebiten.KeyLeft) && playerOne.xPos > 0 {
 			playerOne.xPos -= playerOne.speed
 			canMove = false
 		}
-		if ebiten.IsKeyPressed(ebiten.KeyRight) {
+		if ebiten.IsKeyPressed(ebiten.KeyRight) && playerOne.xPos < tileSize*14 {
 			playerOne.xPos += playerOne.speed
 			canMove = false
 		}
