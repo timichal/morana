@@ -27,6 +27,7 @@ const (
 var (
 	err        error
 	ship       *ebiten.Image
+	enemyImage *ebiten.Image
 	tilesImage *ebiten.Image
 	playerOne  player
 	ticks      int
@@ -42,12 +43,25 @@ type Game struct {
 type player struct {
 	image      *ebiten.Image
 	xPos, yPos float64
-	speed      float64
+	hp         float64
+	attack     float64
+}
+
+type enemy struct {
+	image      *ebiten.Image
+	xPos, yPos float64
+	hp         float64
+	attack     float64
 }
 
 // Run this code once at startup
 func init() {
 	ship, _, err = ebitenutil.NewImageFromFile("assets/ship.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	enemyImage, _, err = ebitenutil.NewImageFromFile("assets/enemy.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -58,9 +72,15 @@ func init() {
 	}
 	tilesImage = ebiten.NewImageFromImage(img)
 
-	playerOne = player{ship, 0, 0, 16}
+	playerOne = player{ship, 0, 0, 20, 1}
 
 	dir = "right"
+}
+
+func generateEnemies() []enemy {
+	enemies := make([]enemy, 1)
+	enemies[0] = enemy{enemyImage, 2, 2, 5, 1}
+	return enemies
 }
 
 func (g *Game) Update() error {
@@ -73,16 +93,16 @@ func (g *Game) Update() error {
 	if ticks%20 == 0 {
 		if dir == "right" {
 			if playerOne.xPos < tileSize*14 {
-				playerOne.xPos += playerOne.speed
+				playerOne.xPos += tileSize
 			} else {
-				playerOne.yPos += playerOne.speed
+				playerOne.yPos += tileSize
 				dir = "left"
 			}
 		} else if dir == "left" {
 			if playerOne.xPos > 0 {
-				playerOne.xPos -= playerOne.speed
+				playerOne.xPos -= tileSize
 			} else {
-				playerOne.yPos += playerOne.speed
+				playerOne.yPos += tileSize
 				dir = "right"
 			}
 		}
@@ -132,6 +152,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	playerOp := &ebiten.DrawImageOptions{}
 	playerOp.GeoM.Translate(playerOne.xPos, playerOne.yPos)
 	screen.DrawImage(playerOne.image, playerOp)
+
+	enemies := generateEnemies()
+	for _, enemy := range enemies {
+		enemyOp := &ebiten.DrawImageOptions{}
+		enemyOp.GeoM.Translate(enemy.xPos*tileSize, enemy.yPos*tileSize)
+		screen.DrawImage(enemy.image, enemyOp)
+	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (width, height int) {
@@ -160,25 +187,27 @@ func main() {
 				243, 218, 243, 243, 243, 243, 243, 243, 243, 243, 243, 244, 243, 243, 243,
 				243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243,
 			},
-			{
-				0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 26, 27, 28, 29, 30, 31, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 51, 52, 53, 54, 55, 56, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 76, 77, 78, 79, 80, 81, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 101, 102, 103, 104, 105, 106, 0, 0, 0, 0,
+			/*
+				{
+					0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 26, 27, 28, 29, 30, 31, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 51, 52, 53, 54, 55, 56, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 76, 77, 78, 79, 80, 81, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 101, 102, 103, 104, 105, 106, 0, 0, 0, 0,
 
-				0, 0, 0, 0, 0, 126, 127, 128, 129, 130, 131, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 303, 303, 245, 242, 303, 303, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 126, 127, 128, 129, 130, 131, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 303, 303, 245, 242, 303, 303, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
 
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
-			},
+					0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
+					0, 0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0,
+				},
+			*/
 		},
 	}
 
