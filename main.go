@@ -31,6 +31,7 @@ var (
 	playerOne  player
 	ticks      int
 	canMove    bool
+	dir        string
 )
 
 type Game struct {
@@ -58,6 +59,8 @@ func init() {
 	tilesImage = ebiten.NewImageFromImage(img)
 
 	playerOne = player{ship, 0, 0, 16}
+
+	dir = "right"
 }
 
 func (g *Game) Update() error {
@@ -66,24 +69,44 @@ func (g *Game) Update() error {
 		canMove = true
 	}
 
-	if canMove == true {
-		if ebiten.IsKeyPressed(ebiten.KeyUp) && playerOne.yPos > 0 {
-			playerOne.yPos -= playerOne.speed
-			canMove = false
-		}
-		if ebiten.IsKeyPressed(ebiten.KeyDown) && playerOne.yPos < tileSize*14 {
-			playerOne.yPos += playerOne.speed
-			canMove = false
-		}
-		if ebiten.IsKeyPressed(ebiten.KeyLeft) && playerOne.xPos > 0 {
-			playerOne.xPos -= playerOne.speed
-			canMove = false
-		}
-		if ebiten.IsKeyPressed(ebiten.KeyRight) && playerOne.xPos < tileSize*14 {
-			playerOne.xPos += playerOne.speed
-			canMove = false
+	// move every second
+	if ticks%20 == 0 {
+		if dir == "right" {
+			if playerOne.xPos < tileSize*14 {
+				playerOne.xPos += playerOne.speed
+			} else {
+				playerOne.yPos += playerOne.speed
+				dir = "left"
+			}
+		} else if dir == "left" {
+			if playerOne.xPos > 0 {
+				playerOne.xPos -= playerOne.speed
+			} else {
+				playerOne.yPos += playerOne.speed
+				dir = "right"
+			}
 		}
 	}
+	/*
+		if canMove == true {
+			if ebiten.IsKeyPressed(ebiten.KeyUp) && playerOne.yPos > 0 {
+				playerOne.yPos -= playerOne.speed
+				canMove = false
+			}
+			if ebiten.IsKeyPressed(ebiten.KeyDown) && playerOne.yPos < tileSize*14 {
+				playerOne.yPos += playerOne.speed
+				canMove = false
+			}
+			if ebiten.IsKeyPressed(ebiten.KeyLeft) && playerOne.xPos > 0 {
+				playerOne.xPos -= playerOne.speed
+				canMove = false
+			}
+			if ebiten.IsKeyPressed(ebiten.KeyRight) && playerOne.xPos < tileSize*14 {
+				playerOne.xPos += playerOne.speed
+				canMove = false
+			}
+		}
+	*/
 	return nil
 }
 
