@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"image"
+	"image/color"
 	_ "image/png"
 	"log"
 	"math/rand"
@@ -12,6 +13,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/images"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 // Our game constants
@@ -31,11 +33,11 @@ var (
 	ship       *ebiten.Image
 	enemyImage *ebiten.Image
 	tilesImage *ebiten.Image
-	playerOne  player
+	player     Player
 	ticks      int
 	canMove    bool
 	dir        bool
-	enemies    []enemy
+	enemies    []Enemy
 )
 
 type Game struct {
@@ -43,21 +45,22 @@ type Game struct {
 }
 
 // Create the player class
-type player struct {
+type Player struct {
+	image      *ebiten.Image
+	xPos, yPos int
+	hp         float64
+	attack     float64
+	exp        float64
+}
+
+type Enemy struct {
 	image      *ebiten.Image
 	xPos, yPos int
 	hp         float64
 	attack     float64
 }
 
-type enemy struct {
-	image      *ebiten.Image
-	xPos, yPos int
-	hp         float64
-	attack     float64
-}
-
-func generateEnemies(numberOfEnemies int) []enemy {
+func generateEnemies(numberOfEnemies int) []Enemy {
 	// generate coords
 	coords := make([][2]int, numberOfEnemies)
 	for i := range coords {
@@ -85,19 +88,26 @@ func generateEnemies(numberOfEnemies int) []enemy {
 	}
 
 	// generate enemies
-	enemies := make([]enemy, numberOfEnemies)
+	enemies := make([]Enemy, numberOfEnemies)
 
 	for i := range enemies {
-		enemies[i] = enemy{enemyImage, coords[i][0], coords[i][1], 5, 1}
+		enemies[i] = Enemy{enemyImage, coords[i][0], coords[i][1], 5, 1}
 	}
 
 	return enemies
 }
 
+func reset() {
+	rand.Seed(time.Now().UnixNano())
+	dir = true // right
+	player.xPos, player.yPos = 0, 0
+	player.hp = 20
+	enemies = generateEnemies(30)
+}
+
 // Run this code once at startup
 func init() {
-	rand.Seed(time.Now().UnixNano())
-	ship, _, err = ebitenutil.NewImageFromFile("assets/ship.png")
+	ship, _, err = ebitenutil.NewImageFromFile("assets/hero.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -112,9 +122,8 @@ func init() {
 		log.Fatal(err)
 	}
 	tilesImage = ebiten.NewImageFromImage(img)
-	dir = true // right
-	playerOne = player{ship, 0, 0, 20, 1}
-	enemies = generateEnemies(30)
+	player = Player{ship, 0, 0, 20, 1, 0}
+	reset()
 }
 
 func findEnemy(x, y int) int {
@@ -130,7 +139,7 @@ func findEnemy(x, y int) int {
 func step(nextX int, nextY int, reverseDir bool) {
 	enemy := findEnemy(nextX, nextY)
 	if enemy < 0 || enemies[enemy].hp <= 0 {
-		playerOne.xPos, playerOne.yPos = nextX, nextY
+		player.xPos, player.yPos = nextX, nextY
 		if reverseDir {
 			dir = !dir
 		}
@@ -141,11 +150,19 @@ func step(nextX int, nextY int, reverseDir bool) {
 
 func fightEnemy(enemyIndex int) {
 	enemy := &enemies[enemyIndex]
-	fmt.Printf("Enemy HP: %f | Player HP: %f\n", enemy.hp, playerOne.hp)
+	fmt.Printf("Enemy HP: %f | Player HP: %f\n", enemy.hp, player.hp)
 	// first the player attacks, then the enemy
 	// todo speed
-	enemy.hp -= playerOne.attack
-	playerOne.hp -= enemy.attack
+	enemy.hp -= player.attack
+	if enemy.hp <= 0 {
+		player.exp += 1
+		return
+	}
+
+	player.hp -= enemy.attack
+	if player.hp <= 0 {
+		reset()
+	}
 }
 
 func (g *Game) Update() error {
@@ -157,35 +174,47 @@ func (g *Game) Update() error {
 	// move every second
 	if ticks%20 == 0 {
 		if dir {
-			if playerOne.xPos < 14 {
-				step(playerOne.xPos+1, playerOne.yPos, false)
+			if player.xPos < 14 {
+				step(player.xPos+1, player.yPos, false)
 			} else {
-				step(playerOne.xPos, playerOne.yPos+1, true)
+				step(player.xPos, player.yPos+1, true)
 			}
 		} else {
-			if playerOne.xPos > 0 {
-				step(playerOne.xPos-1, playerOne.yPos, false)
+			if player.xPos > 0 {
+				step(player.xPos-1, player.yPos, false)
 			} else {
-				step(playerOne.xPos, playerOne.yPos+1, true)
+				step(player.xPos, player.yPos+1, true)
 			}
 		}
 	}
+
+	// upgrade button
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		x, y := ebiten.CursorPosition()
+		if x > 0 && x < 100 && y > 230 {
+			if player.exp >= 1 {
+				player.exp -= 1
+				player.attack += 1
+			}
+		}
+	}
+
 	/*
 		if canMove == true {
-			if ebiten.IsKeyPressed(ebiten.KeyUp) && playerOne.yPos > 0 {
-				playerOne.yPos -= playerOne.speed
+			if ebiten.IsKeyPressed(ebiten.KeyUp) && player.yPos > 0 {
+				player.yPos -= player.speed
 				canMove = false
 			}
-			if ebiten.IsKeyPressed(ebiten.KeyDown) && playerOne.yPos < tileSize*14 {
-				playerOne.yPos += playerOne.speed
+			if ebiten.IsKeyPressed(ebiten.KeyDown) && player.yPos < tileSize*14 {
+				player.yPos += player.speed
 				canMove = false
 			}
-			if ebiten.IsKeyPressed(ebiten.KeyLeft) && playerOne.xPos > 0 {
-				playerOne.xPos -= playerOne.speed
+			if ebiten.IsKeyPressed(ebiten.KeyLeft) && player.xPos > 0 {
+				player.xPos -= player.speed
 				canMove = false
 			}
-			if ebiten.IsKeyPressed(ebiten.KeyRight) && playerOne.xPos < tileSize*14 {
-				playerOne.xPos += playerOne.speed
+			if ebiten.IsKeyPressed(ebiten.KeyRight) && player.xPos < tileSize*14 {
+				player.xPos += player.speed
 				canMove = false
 			}
 		}
@@ -210,11 +239,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f Tick: %d", ebiten.CurrentTPS(), ticks))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("Tick: %d HP: %.0f XP: %.0f Atk: %.0f", ticks, player.hp, player.exp, player.attack))
 
 	playerOp := &ebiten.DrawImageOptions{}
-	playerOp.GeoM.Translate(float64(playerOne.xPos)*tileSize, float64(playerOne.yPos)*tileSize)
-	screen.DrawImage(playerOne.image, playerOp)
+	playerOp.GeoM.Translate(float64(player.xPos)*tileSize, float64(player.yPos)*tileSize)
+	screen.DrawImage(player.image, playerOp)
 
 	for _, enemy := range enemies {
 		if enemy.hp > 0 {
@@ -223,6 +252,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			screen.DrawImage(enemy.image, enemyOp)
 		}
 	}
+
+	drawTextWithShadow(screen, "upgrade atk", 0, 230, 1, color.Black)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (width, height int) {
@@ -249,7 +280,7 @@ func main() {
 				243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243,
 				243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243,
 				243, 218, 243, 243, 243, 243, 243, 243, 243, 243, 243, 244, 243, 243, 243,
-				243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243,
+				243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 129,
 			},
 			/*
 				{
