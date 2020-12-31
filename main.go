@@ -7,6 +7,7 @@ import (
 	_ "image/png"
 	"log"
 	"math/rand"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -44,7 +45,7 @@ type Game struct {
 // Create the player class
 type player struct {
 	image      *ebiten.Image
-	xPos, yPos float64
+	xPos, yPos int
 	hp         float64
 	attack     float64
 }
@@ -95,6 +96,7 @@ func generateEnemies(numberOfEnemies int) []enemy {
 
 // Run this code once at startup
 func init() {
+	rand.Seed(time.Now().UnixNano())
 	ship, _, err = ebitenutil.NewImageFromFile("assets/ship.png")
 	if err != nil {
 		log.Fatal(err)
@@ -112,7 +114,26 @@ func init() {
 	tilesImage = ebiten.NewImageFromImage(img)
 	dir = "right"
 	playerOne = player{ship, 0, 0, 20, 1}
-	enemies = generateEnemies(10)
+	enemies = generateEnemies(30)
+}
+
+func findEnemy(x, y int) int {
+	for i, enemy := range enemies {
+		if enemy.xPos == x && enemy.yPos == y {
+			return i
+		}
+	}
+
+	return -1
+}
+
+func fightEnemy(enemyIndex int) {
+	enemy := &enemies[enemyIndex]
+	fmt.Printf("Enemy HP: %f | Player HP: %f\n", enemy.hp, playerOne.hp)
+	// first the player attacks, then the enemy
+	// todo speed
+	enemy.hp -= playerOne.attack
+	playerOne.hp -= enemy.attack
 }
 
 func (g *Game) Update() error {
@@ -124,18 +145,38 @@ func (g *Game) Update() error {
 	// move every second
 	if ticks%20 == 0 {
 		if dir == "right" {
-			if playerOne.xPos < tileSize*14 {
-				playerOne.xPos += tileSize
+			if playerOne.xPos < 14 {
+				enemy := findEnemy(playerOne.xPos+1, playerOne.yPos)
+				if enemy < 0 || enemies[enemy].hp <= 0 {
+					playerOne.xPos += 1
+				} else {
+					fightEnemy(enemy)
+				}
 			} else {
-				playerOne.yPos += tileSize
-				dir = "left"
+				enemy := findEnemy(playerOne.xPos, playerOne.yPos+1)
+				if enemy < 0 || enemies[enemy].hp <= 0 {
+					playerOne.yPos += 1
+					dir = "left"
+				} else {
+					fightEnemy(enemy)
+				}
 			}
 		} else if dir == "left" {
 			if playerOne.xPos > 0 {
-				playerOne.xPos -= tileSize
+				enemy := findEnemy(playerOne.xPos-1, playerOne.yPos)
+				if enemy < 0 || enemies[enemy].hp <= 0 {
+					playerOne.xPos -= 1
+				} else {
+					fightEnemy(enemy)
+				}
 			} else {
-				playerOne.yPos += tileSize
-				dir = "right"
+				enemy := findEnemy(playerOne.xPos, playerOne.yPos+1)
+				if enemy < 0 || enemies[enemy].hp <= 0 {
+					playerOne.yPos += 1
+					dir = "right"
+				} else {
+					fightEnemy(enemy)
+				}
 			}
 		}
 	}
@@ -182,13 +223,15 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("TPS: %0.2f Tick: %d", ebiten.CurrentTPS(), ticks))
 
 	playerOp := &ebiten.DrawImageOptions{}
-	playerOp.GeoM.Translate(playerOne.xPos, playerOne.yPos)
+	playerOp.GeoM.Translate(float64(playerOne.xPos)*tileSize, float64(playerOne.yPos)*tileSize)
 	screen.DrawImage(playerOne.image, playerOp)
 
 	for _, enemy := range enemies {
-		enemyOp := &ebiten.DrawImageOptions{}
-		enemyOp.GeoM.Translate(float64(enemy.xPos)*tileSize, float64(enemy.yPos)*tileSize)
-		screen.DrawImage(enemy.image, enemyOp)
+		if enemy.hp > 0 {
+			enemyOp := &ebiten.DrawImageOptions{}
+			enemyOp.GeoM.Translate(float64(enemy.xPos)*tileSize, float64(enemy.yPos)*tileSize)
+			screen.DrawImage(enemy.image, enemyOp)
+		}
 	}
 }
 
