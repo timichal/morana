@@ -34,7 +34,7 @@ var (
 	playerOne  player
 	ticks      int
 	canMove    bool
-	dir        string
+	dir        bool
 	enemies    []enemy
 )
 
@@ -112,7 +112,7 @@ func init() {
 		log.Fatal(err)
 	}
 	tilesImage = ebiten.NewImageFromImage(img)
-	dir = "right"
+	dir = true // right
 	playerOne = player{ship, 0, 0, 20, 1}
 	enemies = generateEnemies(30)
 }
@@ -125,6 +125,18 @@ func findEnemy(x, y int) int {
 	}
 
 	return -1
+}
+
+func step(nextX int, nextY int, reverseDir bool) {
+	enemy := findEnemy(nextX, nextY)
+	if enemy < 0 || enemies[enemy].hp <= 0 {
+		playerOne.xPos, playerOne.yPos = nextX, nextY
+		if reverseDir {
+			dir = !dir
+		}
+	} else {
+		fightEnemy(enemy)
+	}
 }
 
 func fightEnemy(enemyIndex int) {
@@ -144,39 +156,17 @@ func (g *Game) Update() error {
 
 	// move every second
 	if ticks%20 == 0 {
-		if dir == "right" {
+		if dir {
 			if playerOne.xPos < 14 {
-				enemy := findEnemy(playerOne.xPos+1, playerOne.yPos)
-				if enemy < 0 || enemies[enemy].hp <= 0 {
-					playerOne.xPos += 1
-				} else {
-					fightEnemy(enemy)
-				}
+				step(playerOne.xPos+1, playerOne.yPos, false)
 			} else {
-				enemy := findEnemy(playerOne.xPos, playerOne.yPos+1)
-				if enemy < 0 || enemies[enemy].hp <= 0 {
-					playerOne.yPos += 1
-					dir = "left"
-				} else {
-					fightEnemy(enemy)
-				}
+				step(playerOne.xPos, playerOne.yPos+1, true)
 			}
-		} else if dir == "left" {
+		} else {
 			if playerOne.xPos > 0 {
-				enemy := findEnemy(playerOne.xPos-1, playerOne.yPos)
-				if enemy < 0 || enemies[enemy].hp <= 0 {
-					playerOne.xPos -= 1
-				} else {
-					fightEnemy(enemy)
-				}
+				step(playerOne.xPos-1, playerOne.yPos, false)
 			} else {
-				enemy := findEnemy(playerOne.xPos, playerOne.yPos+1)
-				if enemy < 0 || enemies[enemy].hp <= 0 {
-					playerOne.yPos += 1
-					dir = "right"
-				} else {
-					fightEnemy(enemy)
-				}
+				step(playerOne.xPos, playerOne.yPos+1, true)
 			}
 		}
 	}
