@@ -6,6 +6,7 @@ import (
 	"image"
 	_ "image/png"
 	"log"
+	"math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -33,6 +34,7 @@ var (
 	ticks      int
 	canMove    bool
 	dir        string
+	enemies    []enemy
 )
 
 type Game struct {
@@ -49,9 +51,46 @@ type player struct {
 
 type enemy struct {
 	image      *ebiten.Image
-	xPos, yPos float64
+	xPos, yPos int
 	hp         float64
 	attack     float64
+}
+
+func generateEnemies(numberOfEnemies int) []enemy {
+	// generate coords
+	coords := make([][2]int, numberOfEnemies)
+	for i := range coords {
+		coords[i] = [2]int{-1, -1}
+	}
+
+	for i := range coords {
+		var x, y int
+		for {
+			x, y = rand.Intn(15), rand.Intn(15)
+
+			duplicate := false
+			for _, coord := range coords {
+				if coord[0] == x && coord[1] == y {
+					duplicate = true
+				}
+			}
+
+			if duplicate == false {
+				break
+			}
+		}
+
+		coords[i] = [2]int{x, y}
+	}
+
+	// generate enemies
+	enemies := make([]enemy, numberOfEnemies)
+
+	for i := range enemies {
+		enemies[i] = enemy{enemyImage, coords[i][0], coords[i][1], 5, 1}
+	}
+
+	return enemies
 }
 
 // Run this code once at startup
@@ -71,16 +110,9 @@ func init() {
 		log.Fatal(err)
 	}
 	tilesImage = ebiten.NewImageFromImage(img)
-
-	playerOne = player{ship, 0, 0, 20, 1}
-
 	dir = "right"
-}
-
-func generateEnemies() []enemy {
-	enemies := make([]enemy, 1)
-	enemies[0] = enemy{enemyImage, 2, 2, 5, 1}
-	return enemies
+	playerOne = player{ship, 0, 0, 20, 1}
+	enemies = generateEnemies(10)
 }
 
 func (g *Game) Update() error {
@@ -153,10 +185,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	playerOp.GeoM.Translate(playerOne.xPos, playerOne.yPos)
 	screen.DrawImage(playerOne.image, playerOp)
 
-	enemies := generateEnemies()
 	for _, enemy := range enemies {
 		enemyOp := &ebiten.DrawImageOptions{}
-		enemyOp.GeoM.Translate(enemy.xPos*tileSize, enemy.yPos*tileSize)
+		enemyOp.GeoM.Translate(float64(enemy.xPos)*tileSize, float64(enemy.yPos)*tileSize)
 		screen.DrawImage(enemy.image, enemyOp)
 	}
 }
